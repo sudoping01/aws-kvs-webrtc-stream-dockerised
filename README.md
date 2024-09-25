@@ -6,6 +6,7 @@
 [![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
 
 This repository provides a Dockerized version of the AWS Kinesis Video Streams (KVS) WebRTC C SDK integrated with GStreamer. It allows users to stream video/audio to AWS KVS WebRTC, using customizable pipelines for different sources (e.g., USB cameras, IP cameras).
+
 ## Contents
 
 - [Features](#features)
@@ -13,6 +14,7 @@ This repository provides a Dockerized version of the AWS Kinesis Video Streams (
 - [Prerequisites](#prerequisites)
 - [Configuration](#configuration)
 - [Usage](#usage)
+- [Docker Hub Image](#docker-hub-image)
 - [Architecture](#architecture)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
@@ -31,7 +33,7 @@ This repository provides a Dockerized version of the AWS Kinesis Video Streams (
 
 1. Clone the repository:
    ```sh
-   git https://github.com/sudoping01/aws-kvs-webrtc-stream-dockerised
+   git clone https://github.com/sudoping01/aws-kvs-webrtc-stream-dockerised
    cd aws-kvs-webrtc-stream-dockerised
    ```
 
@@ -78,13 +80,12 @@ This repository provides a Dockerized version of the AWS Kinesis Video Streams (
    rootCAFile: <your-root-ca-file> #AmazonRootCA1.pem
    certFile: <your-thing-cert-file> #thing.cert.pem 
    privateKeyFile: <your-private-key-file> #thing.private.key
-
    ```
 
 3. Adjust `docker-compose.yml` for your use case:
    ```yaml
    environment:
-     - AWS_DEFAULT_REGION=your_aws_region # if no set, the default one is west-2 
+     - AWS_DEFAULT_REGION=your_aws_region # if not set, the default is us-west-2 
      - CHANNEL_NAME=your_channel_name
      - PIPELINE=your_gstreamer_pipeline
    ```
@@ -99,8 +100,6 @@ This repository provides a Dockerized version of the AWS Kinesis Video Streams (
          ```text
          rtspsrc location=rtsp://<user>:<password>@<ip>:554/cam/realmonitor?channel=1&subtype=1&unicast=false&proto=Onvif latency=0 short-header=TRUE ! rtph264depay !video/x-h264,stream-format=byte-stream,alignment=au,profile=baseline ! appsink sync=TRUE emit-signals=TRUE name=appsink-video
          ```
-
-
 
 ## Usage
 
@@ -122,6 +121,28 @@ docker-compose up
 docker-compose down
 ```
 
+## Docker Hub Image
+
+We provide a pre-built Docker image on Docker Hub for convenience. You can pull and use this image instead of building it locally:
+
+```sh
+docker pull sudoping01/aws-kvs-webrtc-stream:latest
+```
+
+To run the container using the Docker Hub image:
+
+```sh
+docker run -it --device=/dev/video0 \
+  -v /path/to/your/certs:/certs \
+  -v /path/to/your/config.yaml:/certs/config.yaml \
+  -e AWS_DEFAULT_REGION=your_aws_region \
+  -e CHANNEL_NAME=your_channel_name \
+  -e PIPELINE="your_gstreamer_pipeline" \
+  sudoping01/aws-kvs-webrtc-stream:latest
+```
+
+For more information about using the Docker Hub image, including configuration details and examples, please visit our [Docker Hub page](https://hub.docker.com/r/sudoping01/aws-kvs-webrtc-stream).
+
 ## Architecture
 
 ```mermaid
@@ -133,7 +154,6 @@ graph TD
 ```
 
 Our solution encapsulates the KVS WebRTC SDK in a Docker container, leveraging IoT Core for secure authentication with AWS services.
-
 
 ## Troubleshooting
 
