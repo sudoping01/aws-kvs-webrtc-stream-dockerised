@@ -1,0 +1,27 @@
+services:
+  kvs_webrtc_stream:
+    image: stream
+    restart: always # restart the service 
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    command: bash -c "sudo -E bash run.sh" 
+    privileged: true
+    network_mode: host
+    devices:
+      - /dev/:/dev/
+
+    environment:
+      - GST_DEBUG=4
+      - AWS_KVS_LOG_LEVEL=1
+      - AWS_DEFAULT_REGION=us-east-1
+      - DEBUG_LOG_SDP=TRUE
+      - USERNAME=iot_stream
+      - CHANNEL_NAME=test_channel #define your channel here
+      - PIPELINE=v4l2src do-timestamp=TRUE device=/dev/video0 ! queue ! videoconvert ! video/x-raw,width=640,height=480,framerate=30/1 ! x264enc bframes=0 speed-preset=veryfast bitrate=512 byte-stream=true tune=zerolatency ! video/x-h264,stream-format=byte-stream,alignment=au,profile=baseline ! appsink sync=TRUE emit-signals=TRUE name=appsink-video 
+
+    volumes:
+          - ./certs/:/home/iot_stream/workspace/certs:rw
+volumes:
+    certs:
