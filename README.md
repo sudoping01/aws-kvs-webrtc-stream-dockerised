@@ -170,13 +170,7 @@ docker-compose logs -f
 
 ## Contributing
 
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/NewFeature`
-3. Commit changes: `git commit -am 'Add NewFeature'`
-4. Push to the branch: `git push origin feature/NewFeature`
-5. Submit a pull request
+We welcome contributions!
 
 ## License
 
